@@ -25,9 +25,9 @@ export class CreateCourseDto {
     @IsNotEmpty()
     category: string;
 
-    @IsString()
-    @IsNotEmpty()
-    createdBy: string;
+    @IsObject()
+    @IsOptional()
+    createdBy: object;
 
     @IsOptional()
     createdAt?: Date;

@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { MailService } from './mail.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module } from "@nestjs/common";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { MailService } from "./mail.service";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
@@ -10,14 +10,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         transport: {
-          host: 'smtp.gmail.com',
+          host: "smtp.gmail.com",
           port: 587,
           auth: {
-            user: configService.get<string>('EMAIL_USERNAME'),
-            pass: configService.get<string>('EMAIL_PASSWORD'),
+            user: configService.get<string>("EMAIL_USERNAME"),
+            pass: configService.get<string>("EMAIL_PASSWORD"),
           },
         },
-
       }),
       inject: [ConfigService],
     }),
@@ -25,4 +24,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [MailService],
   exports: [MailService],
 })
-export class MailModule { }
+export class MailModule {}

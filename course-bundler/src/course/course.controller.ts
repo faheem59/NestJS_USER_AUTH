@@ -2,14 +2,23 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { Public } from './decorator/public-decorator';
+import { LectureDto } from './dto/Lecture-dto';
 
 @Controller('course')
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(private readonly courseService: CourseService) { }
 
-  @Post()
+  @Public()
+  @Post('/create')
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.courseService.create(createCourseDto);
+  }
+
+  @Public()
+  @Post(':courseId/lectures')
+  async addLecture(@Param('courseId') courseId: number, @Body() lectureData: LectureDto) {
+    return await this.courseService.addLecture(courseId, lectureData);
   }
 
   @Get()

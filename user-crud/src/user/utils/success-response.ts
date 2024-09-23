@@ -1,38 +1,36 @@
 import { User } from "../entities/user.entity";
 
-
 export class CreateUserResponse {
-    message: string;
-    user: User;
+  message: string;
+  user: User;
 }
 
 export class UpdateUserResponse {
-    message: string;
-    user?: User;
+  message: string;
+  user?: User;
 }
 
 export class DeleteUserResponse {
-    message: string;
+  message: string;
 }
 
 export class FindAllUsersResponse {
-    message: string;
-    users: User[];
+  message: string;
+  users: User[];
 }
 
-
 export class FindSingleUsersResponse {
-    statusCode?: number
-    message: string;
-    user?: User;
+  statusCode?: number;
+  message: string;
+  user?: User;
 }
 
 export class LoginUserResponse {
-    message: string;
-    user?: User
-    accessToken?: string
+  message: string;
+  user?: User;
+  accessToken?: string;
 }
 
 export class VerifyEmailResponse {
-    message: string
+  message: string;
 }

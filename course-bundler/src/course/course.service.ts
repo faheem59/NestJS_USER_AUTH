@@ -3,28 +3,31 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { CreateUserDto } from './dto/user-dto';
+import { CourseRepository } from './repository/course-repository';
+import { LectureDto } from './dto/Lecture-dto';
 
 @Injectable()
 export class CourseService {
+  constructor(private readonly courseRepository: CourseRepository) { }
 
-  @EventPattern('user_created')
-  handleUserCreated(@Payload() data: CreateUserDto) {
-    return this
-  }
-  create(createCourseDto: CreateCourseDto) {
-
+  async create(createCourseDto: CreateCourseDto) {
+    return await this.courseRepository.createCourse(createCourseDto);
   }
 
-  findAll() {
-    return `This action returns all course`;
+  async addLecture(courseId: number, lectureData: LectureDto) {
+    return await this.courseRepository.addLectures(courseId, lectureData)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findAll() {
+    return await this.courseRepository.findAllCourses();
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async findOne(id: number) {
+    return await this.courseRepository.findCourseById(id);
+  }
+
+  async update(id: number, updateCourseData: UpdateCourseDto) {
+    return await this.courseRepository.updateCourse(id, updateCourseData)
   }
 
   remove(id: number) {
