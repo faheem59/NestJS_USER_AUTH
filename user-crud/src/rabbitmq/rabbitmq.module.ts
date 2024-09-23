@@ -19,6 +19,6 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     ]),
   ],
   providers: [RabbitmqService],
-  exports: [RabbitmqService], // Export RabbitmqService
+  exports: [RabbitmqService],
 })
 export class RabbitmqModule {}

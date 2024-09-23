@@ -12,6 +12,7 @@ import {
   DeleteUserResponse,
   FindAllUsersResponse,
   FindSingleUsersResponse,
+  ResetPasswordResponse,
   UpdateUserResponse,
   VerifyEmailResponse,
 } from "./utils/success-response";
@@ -146,7 +147,10 @@ export class UserService {
     await this.userRepository.saveResetToken(email, token);
     return token;
   }
-  async resetPassword(token: string, newPassword: string): Promise<string> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<ResetPasswordResponse> {
     return await this.userRepository.resetPassword(token, newPassword);
   }
 

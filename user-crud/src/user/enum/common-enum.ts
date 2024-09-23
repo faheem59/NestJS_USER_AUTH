@@ -5,4 +5,5 @@ export enum Common {
   ROLE = "role",
   ADMIN = "admin",
   INSTRUCTOR = "instructor",
+  RABBITMQ_CLIENT = "RABBITMQ_CLIENT",
 }

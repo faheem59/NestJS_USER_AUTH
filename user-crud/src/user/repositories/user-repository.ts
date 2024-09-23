@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -16,7 +17,10 @@ import { Role } from "../enum/role-enum";
 import { UserStatus } from "../enum/permission-enum";
 import { Common } from "../enum/common-enum";
 import { MailService } from "../../mail/mail.service";
-import { VerifyEmailResponse } from "../utils/success-response";
+import {
+  ResetPasswordResponse,
+  VerifyEmailResponse,
+} from "../utils/success-response";
 import { SUCCESS_MESSAGES } from "../utils/success-messges-constant";
 
 @Injectable()
@@ -69,10 +73,9 @@ export class UserRepository {
     await this.repository.save(user);
 
     try {
-      const sent = await this.mailService.sendEmail(user.email);
-      console.log(sent, "Email sent successfully");
+      await this.mailService.sendEmail(user.email);
     } catch (error) {
-      console.error("Failed to send email during user creation:", error);
+      throw new InternalServerErrorException(error.message);
     }
 
     return user;
@@ -113,10 +116,9 @@ export class UserRepository {
     });
     await this.repository.save(admin);
     try {
-      const sent = await this.mailService.sendEmail(admin.email);
-      console.log(sent, "Email sent successfully");
+      await this.mailService.sendEmail(admin.email);
     } catch (error) {
-      console.error("Failed to send email during user creation:", error);
+      throw new InternalServerErrorException(error.message);
     }
     return admin;
   }
@@ -197,7 +199,7 @@ export class UserRepository {
   async saveResetToken(email: string, token: string): Promise<void> {
     const user = await this.repository.findOne({ where: { email } });
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
     user.resetToken = token;
@@ -215,17 +217,24 @@ export class UserRepository {
     return user;
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<string> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<ResetPasswordResponse> {
     const user = await this.findUserByToken(token);
     if (!user) {
-      throw new BadRequestException("Invalid or expired token");
+      throw new BadRequestException(
+        ERROR_MESSAGES.INVALID_REFRESH_TOKEN_OR_EXPIRES,
+      );
     }
 
     user.password = await bcrypt.hash(newPassword, this.saltRounds);
     user.resetToken = null;
     await this.repository.save(user);
 
-    return "Password has been reset successfully";
+    return {
+      message: SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS,
+    };
   }
   async isAdmin(userId: number): Promise<boolean> {
     const user = await this.repository.findOne({

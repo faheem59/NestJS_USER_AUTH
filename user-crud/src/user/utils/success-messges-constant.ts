@@ -6,4 +6,5 @@ export const SUCCESS_MESSAGES = {
   USER_LOGGEDIN: "User Login Successfully",
   ADMIN_CREATED: "Admin successfully created",
   EMAIL_VERFIED: "Email is verified",
+  PASSWORD_RESET_SUCCESS: "Password has been reset successfully",
 };

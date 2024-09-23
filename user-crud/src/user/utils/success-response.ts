@@ -34,3 +34,7 @@ export class LoginUserResponse {
 export class VerifyEmailResponse {
   message: string;
 }
+
+export class ResetPasswordResponse {
+  message: string;
+}
