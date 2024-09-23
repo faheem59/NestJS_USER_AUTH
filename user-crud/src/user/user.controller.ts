@@ -16,13 +16,13 @@ import {
   DeleteUserResponse,
   FindAllUsersResponse,
   UpdateUserResponse,
-} from "./utils/success-response";
+} from "../utils/success-response";
 import { Public, Roles } from "src/auth/decorator/public.decorator";
 import { CurrentUser } from "src/auth/decorator/current-user.decorator";
 import { User } from "./interface/interface";
-import { ERROR_MESSAGES } from "./utils/error-messages";
-import { Role } from "./enum/role-enum";
-import { UserStatus } from "./enum/permission-enum";
+import { ERROR_MESSAGES } from "../utils/error-messages";
+import { Role } from "../enum/role-enum";
+import { UserStatus } from "../enum/permission-enum";
 import { AddPermissionsDto, RemovePermissionsDto } from "./dto/permission-dto";
 import { MailService } from "../mail/mail.service";
 
@@ -62,7 +62,7 @@ export class UserController {
   }
 
   @Roles(Role.ADMIN)
-  @Get("ins")
+  @Get("instructor")
   async findAllInstructor(): Promise<FindAllUsersResponse> {
     return this.userService.findInstructor();
   }
@@ -87,8 +87,8 @@ export class UserController {
     return this.userService.update(user.id, updateUserDto);
   }
 
-  @Patch(":id/status")
   @Roles(Role.ADMIN)
+  @Patch(":id/status")
   async updateStatus(
     @Param("id") userId: number,
     @Body("status") status: UserStatus,

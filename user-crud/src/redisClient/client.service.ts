@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from "@nestjs/common";
 import { Cache } from "cache-manager";
-import { Common } from "../user/enum/common-enum";
+import { Common } from "../enum/common-enum";
 
 @Injectable()
 export class ClientService {

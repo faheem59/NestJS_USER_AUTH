@@ -6,8 +6,8 @@ import {
 import { UserRepository } from "./repositories/user-repository";
 import { User } from "./entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { ERROR_MESSAGES } from "./utils/error-messages";
-import { SUCCESS_MESSAGES } from "./utils/success-messges";
+import { ERROR_MESSAGES } from "../utils/error-messages";
+import { SUCCESS_MESSAGES } from "../utils/success-messges";
 import {
   DeleteUserResponse,
   FindAllUsersResponse,
@@ -15,9 +15,9 @@ import {
   ResetPasswordResponse,
   UpdateUserResponse,
   VerifyEmailResponse,
-} from "./utils/success-response";
+} from "../utils/success-response";
 import { plainToClass } from "class-transformer";
-import { UserStatus } from "./enum/permission-enum";
+import { UserStatus } from "../enum/permission-enum";
 import { PermissionRepository } from "./repositories/permssion-repository";
 import * as crypto from "crypto";
 import { ClientService } from "../redisClient/client.service";

@@ -9,7 +9,7 @@ import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { IS_PUBLIC_KEY } from "../decorator/public.decorator";
-import { ERROR_MESSAGES } from "src/user/utils/error-messages";
+import { ERROR_MESSAGES } from "../../utils/error-messages";
 import { Cache } from "cache-manager";
 
 @Injectable()

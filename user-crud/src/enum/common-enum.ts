@@ -6,6 +6,6 @@ export enum Common {
   ADMIN = "admin",
   INSTRUCTOR = "instructor",
   RABBITMQ_CLIENT = "RABBITMQ_CLIENT",
-  VERIFICATION_SUBJECT = 'Welcome, Please Verify Your account',
-  RESET_PASSWORD_SUBJECT = 'Password Reset Request'
+  VERIFICATION_SUBJECT = "Welcome, Please Verify Your account",
+  RESET_PASSWORD_SUBJECT = "Password Reset Request",
 }

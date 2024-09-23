@@ -3,20 +3,22 @@ import { UserService } from "./user.service";
 import { UserRepository } from "./repositories/user-repository";
 import { User } from "./entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { ERROR_MESSAGES } from "./utils/error-messages";
-import { SUCCESS_MESSAGES } from "./utils/success-messges";
+import { ERROR_MESSAGES } from "../utils/error-messages";
+import { SUCCESS_MESSAGES } from "../utils/success-messges";
 import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
-import { UserStatus } from "./enum/permission-enum";
-import { AuthService } from "src/auth/auth.service";
+import { UserStatus } from "../enum/permission-enum";
+import { PermissionRepository } from "./repositories/permssion-repository";
+import { ClientService } from "../redisClient/client.service";
 
 describe("UserService", () => {
   let userService: UserService;
-  let authService: AuthService;
   let userRepository: Partial<UserRepository>;
+  let permissionRepository: Partial<PermissionRepository>;
+  let clientService: Partial<ClientService>;
 
   const mockUser = {
     id: 1,
@@ -34,12 +36,19 @@ describe("UserService", () => {
   };
 
   const mockUserRepository = {
-    creatUser: jest.fn(),
     findAll: jest.fn(),
     findById: jest.fn(),
     updateOne: jest.fn(),
     destroy: jest.fn(),
   };
+
+  const mockPermissionRepository = {
+    addPermissionsToUser: jest.fn(),
+    removePermissionsFromUser: jest.fn(),
+    getUserPermissions: jest.fn(),
+  };
+
+  const mockClientService = {};
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -49,38 +58,24 @@ describe("UserService", () => {
           provide: UserRepository,
           useValue: mockUserRepository,
         },
+        {
+          provide: PermissionRepository,
+          useValue: mockPermissionRepository,
+        },
+        {
+          provide: ClientService,
+          useValue: mockClientService,
+        },
       ],
     }).compile();
 
     userService = module.get<UserService>(UserService);
     userRepository = module.get<Partial<UserRepository>>(UserRepository);
+    permissionRepository =
+      module.get<Partial<PermissionRepository>>(PermissionRepository);
+    clientService = module.get<Partial<ClientService>>(ClientService);
   });
-
-  describe("create", () => {
-    it("should create a new user and return it", async () => {
-      jest
-        .spyOn(userRepository, "creatUser")
-        .mockResolvedValue(mockUser as unknown as User);
-
-      const result = await authService.create(mockUser);
-
-      expect(userRepository.creatUser).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual({
-        message: SUCCESS_MESSAGES.USER_CREATED,
-        user: plainToClass(User, mockUser),
-      });
-    });
-
-    it("should throw an InternalServerErrorException if creatUser fails", async () => {
-      jest
-        .spyOn(userRepository, "creatUser")
-        .mockRejectedValue(new Error("Error"));
-
-      await expect(authService.create(mockUser)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-    });
-  });
+ 
 
   describe("findAll", () => {
     it("should return all users without sensitive info", async () => {

@@ -5,7 +5,7 @@ import {
   JoinColumn,
   OneToMany,
 } from "typeorm";
-import { Role as RoleEnum } from "../enum/role-enum";
+import { Role as RoleEnum } from "../../enum/role-enum";
 import { User } from "./user.entity";
 
 @Entity()

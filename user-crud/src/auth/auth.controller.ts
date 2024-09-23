@@ -5,18 +5,18 @@ import { CreateUserDto } from "./dto/sign-up-dto";
 import {
   CreateUserResponse,
   LoginUserResponse,
-} from "src/user/utils/success-response";
+} from "src/utils/success-response";
 import { Public } from "./decorator/public.decorator";
 import { RefreshTokenDto } from "./dto/refresh-token-dto";
 
-@Controller({ path: "auth", version:'1' })
+@Controller({ path: "auth", version: "1" })
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Public()
   @Post("/signup")
   signUp(@Body() signUpDto: CreateUserDto): Promise<CreateUserResponse> {
-    return this.authService.create(signUpDto);
+    return this.authService.createUser(signUpDto);
   }
 
   @Public()

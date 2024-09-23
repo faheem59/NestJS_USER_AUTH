@@ -8,8 +8,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { In } from "typeorm";
-import { ERROR_MESSAGES } from "../utils/error-messages";
-import { Common } from "../enum/common-enum";
+import { ERROR_MESSAGES } from "../../utils/error-messages";
+import { Common } from "../../enum/common-enum";
 import { ClientService } from "../../redisClient/client.service";
 
 @Injectable()

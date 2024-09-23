@@ -9,7 +9,7 @@ import {
   ManyToMany,
 } from "typeorm";
 import { RoleEntity } from "./role.entity";
-import { UserStatus } from "../enum/permission-enum";
+import { UserStatus } from "../../enum/permission-enum";
 import { Permission } from "./permission.entity";
 import { RefreshToken } from "./refreshToken.entity";
 

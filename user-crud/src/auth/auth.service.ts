@@ -4,40 +4,40 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { UserRepository } from "src/user/repositories/user-repository";
+import { UserRepository } from "../user/repositories/user-repository";
 import { CreateUserDto } from "./dto/sign-up-dto";
-import { SUCCESS_MESSAGES } from "src/user/utils/success-messges";
-import { ERROR_MESSAGES } from "src/user/utils/error-messages";
+import { SUCCESS_MESSAGES } from "../utils/success-messges";
+import { ERROR_MESSAGES } from "../utils/error-messages";
 import { LoginDto } from "./dto/login-dto";
 import {
   CreateUserResponse,
   LoginUserResponse,
-} from "src/user/utils/success-response";
+} from "../utils/success-response";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
-import { User } from "src/user/entities/user.entity";
-import { UserStatus } from "../user/enum/permission-enum";
+import { User } from "../user/entities/user.entity";
+import { UserStatus } from "../enum/permission-enum";
 import { InjectRepository } from "@nestjs/typeorm";
-import { RefreshToken } from "src/user/entities/refreshToken.entity";
+import { RefreshToken } from "../user/entities/refreshToken.entity";
 import { Repository } from "typeorm";
 import { RefreshTokenDto } from "./dto/refresh-token-dto";
-import { ClientService } from "src/redisClient/client.service";
-import { RabbitmqService } from "src/rabbitmq/rabbitmq.service";
+import { ClientService } from "../redisClient/client.service";
+import { RabbitmqService } from "../rabbitmq/rabbitmq.service";
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
     private userRepository: UserRepository,
     private jwtService: JwtService,
     private cacheService: ClientService,
     private rabbitmqService: RabbitmqService,
-    @InjectRepository(RefreshToken)
-    private readonly refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
   // to create user
-  async create(userData: CreateUserDto): Promise<CreateUserResponse> {
+  async createUser(userData: CreateUserDto): Promise<CreateUserResponse> {
     try {
       const user = await this.userRepository.creatUser(userData);
       const refreshToken = await this.generateRefereshtoken(user.id);
@@ -66,7 +66,7 @@ export class AuthService {
       // Save the refresh token in the database
       await this.saveRefreshToken(admin.id, refreshToken);
       await this.rabbitmqService.sendMessage(
-        "user created successfully",
+        "admin_created",
         plainToClass(User, admin),
       );
       return {

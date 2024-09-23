@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { Common } from "../user/enum/common-enum";
+import { Common } from "../enum/common-enum";
 
 @Injectable()
 export class RabbitmqService {

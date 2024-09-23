@@ -5,8 +5,9 @@ import {
   ForbiddenException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Role } from "../../user/enum/role-enum";
+import { Role } from "../../enum/role-enum";
 import { ROLES_KEY } from "../decorator/public.decorator";
+import { ERROR_MESSAGES } from "../../utils/error-messages";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -25,7 +26,7 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
     if (!user || !user.role) {
       throw new ForbiddenException(
-        "Access denied: role information is missing.",
+        ERROR_MESSAGES.ACCESS_DENIED,
       );
     }
     return requiredRoles.includes(user.role);

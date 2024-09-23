@@ -21,6 +21,7 @@ export const ERROR_MESSAGES = {
   ROLE_NOT_FOUND: "Role not found",
   USER_STATUS_NOT_CHANGED: "Only admins can change user status",
   EMAIL_EXITS: "Email already exits",
-  FAILED_TO_SEND_EMAIL: 'Failed to send email',
-  FAILED_TO_SEND_RESET_MAIL:'Failed to send password reset email'
+  FAILED_TO_SEND_EMAIL: "Failed to send email",
+  FAILED_TO_SEND_RESET_MAIL: "Failed to send password reset email",
+  ACCESS_DENIED :'Access denied: role information is missing.'
 };
