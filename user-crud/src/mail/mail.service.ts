@@ -1,39 +1,66 @@
 import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
+import * as fs from "fs";
+import * as path from "path";
+import { ResetPasswordResponse, VerifyEmailResponse } from "src/user/utils/success-response";
+import { SUCCESS_MESSAGES } from "src/user/utils/success-messges";
+import { ERROR_MESSAGES } from "src/user/utils/error-messages";
+import { Common } from "../user/enum/common-enum";
 
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendEmail(email: string): Promise<string> {
+  // templates for better UI
+  private async loadTemplate(templateName: string, replacements: Record<string, string>): Promise<string> {
+    const templatePath = path.join(__dirname, '../mail/email-templates', `${templateName}.html`);
+    let template = fs.readFileSync(templatePath, 'utf-8');
+    
+    for (const key in replacements) {
+      template = template.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+    }
+
+    return template;
+  }
+
+  // send a verification mail to user
+  async sendEmail(email: string): Promise<VerifyEmailResponse> {
     const verificationLink = `http://localhost:3000/verify?email=${encodeURIComponent(email)}`;
+    
+    const htmlContent = await this.loadTemplate('verification-email', { verificationLink });
+    
     try {
       await this.mailerService.sendMail({
         to: email,
-        from: "coursebundler@edu.com",
-        subject: "Test email from NestJS!",
-        text: `This is a test email. Please verify your email by clicking on the link: ${verificationLink}`,
+        subject: Common.VERIFICATION_SUBJECT,
+        html: htmlContent,
       });
-      return "Email sent";
+      return {
+        message:SUCCESS_MESSAGES.EMAIL_VERFIED
+      };
     } catch (error) {
-      console.error("Error sending email:", error);
-      throw new Error("Failed to send email");
+      throw new Error(ERROR_MESSAGES.FAILED_TO_SEND_EMAIL);
     }
   }
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<string> {
+  // send a reset mail to user to update a new password
+
+  async sendPasswordResetEmail(email: string, token: string): Promise<ResetPasswordResponse> {
     const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    
+    const htmlContent = await this.loadTemplate('password-reset-email', { resetLink });
+    
     try {
-      const sent = await this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: email,
-        subject: "Password Reset Request",
-        text: `To reset your password, click the following link: ${resetLink}`,
+        subject: Common.RESET_PASSWORD_SUBJECT,
+        html: htmlContent,
       });
-      console.log(`Password reset email sent to: ${email}`, sent);
-      return "Password reset email sent";
+      return {
+        message:SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS
+      };
     } catch (error) {
-      console.error("Error sending email:", error);
-      throw new Error("Failed to send password reset email");
+      throw new Error(ERROR_MESSAGES.FAILED_TO_SEND_RESET_MAIL);
     }
   }
 }

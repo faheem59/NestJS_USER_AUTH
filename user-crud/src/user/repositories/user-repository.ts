@@ -10,7 +10,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import * as bcrypt from "bcrypt";
-import { ERROR_MESSAGES } from "../utils/error-messages-constant";
+import { ERROR_MESSAGES } from "../utils/error-messages";
 import { User } from "../entities/user.entity";
 import { RoleEntity } from "../entities/role.entity";
 import { Role } from "../enum/role-enum";
@@ -21,7 +21,7 @@ import {
   ResetPasswordResponse,
   VerifyEmailResponse,
 } from "../utils/success-response";
-import { SUCCESS_MESSAGES } from "../utils/success-messges-constant";
+import { SUCCESS_MESSAGES } from "../utils/success-messges";
 
 @Injectable()
 export class UserRepository {

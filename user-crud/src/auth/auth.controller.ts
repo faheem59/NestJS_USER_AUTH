@@ -9,7 +9,7 @@ import {
 import { Public } from "./decorator/public.decorator";
 import { RefreshTokenDto } from "./dto/refresh-token-dto";
 
-@Controller({ path: "auth" })
+@Controller({ path: "auth", version:'1' })
 export class AuthController {
   constructor(private authService: AuthService) {}
 

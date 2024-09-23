@@ -3,8 +3,8 @@ import { UserService } from "./user.service";
 import { UserRepository } from "./repositories/user-repository";
 import { User } from "./entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { ERROR_MESSAGES } from "./utils/error-messages-constant";
-import { SUCCESS_MESSAGES } from "./utils/success-messges-constant";
+import { ERROR_MESSAGES } from "./utils/error-messages";
+import { SUCCESS_MESSAGES } from "./utils/success-messges";
 import {
   InternalServerErrorException,
   NotFoundException,

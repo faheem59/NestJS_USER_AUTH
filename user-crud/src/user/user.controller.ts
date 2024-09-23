@@ -20,7 +20,7 @@ import {
 import { Public, Roles } from "src/auth/decorator/public.decorator";
 import { CurrentUser } from "src/auth/decorator/current-user.decorator";
 import { User } from "./interface/interface";
-import { ERROR_MESSAGES } from "./utils/error-messages-constant";
+import { ERROR_MESSAGES } from "./utils/error-messages";
 import { Role } from "./enum/role-enum";
 import { UserStatus } from "./enum/permission-enum";
 import { AddPermissionsDto, RemovePermissionsDto } from "./dto/common-dto";

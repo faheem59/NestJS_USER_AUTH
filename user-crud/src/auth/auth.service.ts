@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { UserRepository } from "src/user/repositories/user-repository";
 import { CreateUserDto } from "./dto/sign-up-dto";
-import { SUCCESS_MESSAGES } from "src/user/utils/success-messges-constant";
-import { ERROR_MESSAGES } from "src/user/utils/error-messages-constant";
+import { SUCCESS_MESSAGES } from "src/user/utils/success-messges";
+import { ERROR_MESSAGES } from "src/user/utils/error-messages";
 import { LoginDto } from "./dto/login-dto";
 import {
   CreateUserResponse,
