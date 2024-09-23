@@ -7,7 +7,6 @@ import {
   IsOptional,
   Matches,
 } from "class-validator";
-import { Role } from "../enum/role-enum";
 
 export class CreateUserDto {
   @IsNotEmpty()

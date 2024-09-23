@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { UserService } from "./user.service";
 import { UserRepository } from "./repositories/user-repository";
 import { User } from "./entities/user.entity";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ERROR_MESSAGES } from "./utils/error-messages-constant";
 import { SUCCESS_MESSAGES } from "./utils/success-messges-constant";
@@ -13,7 +12,6 @@ import {
 import { plainToClass } from "class-transformer";
 import { UserStatus } from "./enum/permission-enum";
 import { AuthService } from "src/auth/auth.service";
-import { permission } from "process";
 
 describe("UserService", () => {
   let userService: UserService;

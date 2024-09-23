@@ -16,11 +16,11 @@ async function bootstrap() {
     },
   );
 
-  // app.enableVersioning({
-  //   type: VersioningType.URI
-  // })
-
   const httpApp = await NestFactory.create(AppModule);
+
+  httpApp.enableVersioning({
+    type: VersioningType.URI,
+  });
 
   httpApp.useGlobalPipes(
     new ValidationPipe({

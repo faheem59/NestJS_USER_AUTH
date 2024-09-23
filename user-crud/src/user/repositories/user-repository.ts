@@ -80,7 +80,7 @@ export class UserRepository {
 
   // createAdmin
   async createAdmin(adminData: CreateUserDto): Promise<User> {
-    const { password, role, ...rest } = adminData;
+    const { password, ...rest } = adminData;
     const hashedPassword = await bcrypt.hash(password, this.saltRounds);
     const existingAdmin = await this.repository.findOne({
       where: { email: adminData.email },

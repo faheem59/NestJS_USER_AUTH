@@ -6,7 +6,6 @@ import {
   JoinColumn,
 } from "typeorm";
 import { User } from "./user.entity";
-import { Role } from "src/user/enum/role-enum";
 
 @Entity()
 export class RefreshToken {
