@@ -14,13 +14,12 @@ import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
 import { User } from "../user/entities/user.entity";
 import { UserStatus } from "../enum/permission-enum";
-import { InjectRepository } from "@nestjs/typeorm";
 import { RefreshToken } from "../user/entities/refreshToken.entity";
-import { Repository } from "typeorm";
 import { RefreshTokenDto } from "./dto/refresh-token-dto";
 import { ClientService } from "../redisClient/client.service";
 import { RabbitmqService } from "../rabbitmq/rabbitmq.service";
 import { UserService } from "../user/user.service";
+import { Common } from "../enum/common-enum";
 
 @Injectable()
 export class AuthService {
@@ -38,7 +37,7 @@ export class AuthService {
       const userResponse = await this.userService.create(userData);
       const user = userResponse.user; 
       
-      await this.rabbitmqService.sendMessage("user_created", plainToClass(User, user));
+      await this.rabbitmqService.sendMessage(Common.USER_CREATED, plainToClass(User, user));
 
       return {
         message: SUCCESS_MESSAGES.USER_CREATED,
@@ -56,7 +55,7 @@ export class AuthService {
       const adminResponse = await this.userService.createAdmin(adminData);
       const admin = adminResponse.user; 
 
-      await this.rabbitmqService.sendMessage("admin_created", plainToClass(User, admin));
+      await this.rabbitmqService.sendMessage(Common.ADMIN_CREATED, plainToClass(User, admin));
 
       return {
         message: SUCCESS_MESSAGES.ADMIN_CREATED,
@@ -107,7 +106,7 @@ export class AuthService {
   async generateAccesstoken(userId: number, role: string): Promise<string> {
     try {
       const accessToken = this.jwtService.sign({ id: userId, role: role });
-      await this.cacheService.setValue("access_token", accessToken);
+      await this.cacheService.setValue(Common.ACCESS_TOKEN, accessToken);
       return accessToken;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -118,7 +117,7 @@ export class AuthService {
   async generateRefereshtoken(userId: number): Promise<string> {
     try {
       const refreshToken = this.jwtService.sign({ id: userId }, { expiresIn: "7d" });
-      await this.cacheService.setValue(`refresh_token`, JSON.stringify(refreshToken));
+      await this.cacheService.setValue(Common.REFRESH_TOKEN, JSON.stringify(refreshToken));
       return refreshToken;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -152,7 +151,7 @@ export class AuthService {
 
       const user = tokenRecord.user;
       const accessToken = await this.generateAccesstoken(user.id, user.role.name);
-      await this.cacheService.setValue(`access_token`, JSON.stringify(user));
+      await this.cacheService.setValue(Common.ACCESS_TOKEN, JSON.stringify(user));
       return { accessToken };
     } catch (error) {
       throw new InternalServerErrorException(error.message);

@@ -13,7 +13,9 @@ export class RefreshTokenRepository {
   constructor(
     @InjectRepository(RefreshToken)
     private readonly refreshTokenReposoitry: Repository<RefreshToken>,
-  ) {}
+  ) { }
+  
+  // Save the token and also update the token if exist
 
   async saveUpdateToken(userId: number, token: string): Promise<void> {
     const existingToken = await this.refreshTokenReposoitry.findOne({
@@ -34,6 +36,7 @@ export class RefreshTokenRepository {
     }
   }
 
+  // find token 
   async findToken(token: string): Promise<RefreshToken> {
     return this.refreshTokenReposoitry.findOne({
       where: { token },
@@ -41,6 +44,8 @@ export class RefreshTokenRepository {
     });
   }
 
+  
+// find user wit id and token
   async findTokenById(userId: number): Promise<RefreshToken | null> {
     try {
       return await this.refreshTokenReposoitry.findOne({
