@@ -4,15 +4,11 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { UserRepository } from "../user/repositories/user-repository";
 import { CreateUserDto } from "./dto/sign-up-dto";
 import { SUCCESS_MESSAGES } from "../utils/success-messges";
 import { ERROR_MESSAGES } from "../utils/error-messages";
 import { LoginDto } from "./dto/login-dto";
-import {
-  CreateUserResponse,
-  LoginUserResponse,
-} from "../utils/success-response";
+import { CreateUserResponse, LoginUserResponse } from "../utils/success-response";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
@@ -24,30 +20,26 @@ import { Repository } from "typeorm";
 import { RefreshTokenDto } from "./dto/refresh-token-dto";
 import { ClientService } from "../redisClient/client.service";
 import { RabbitmqService } from "../rabbitmq/rabbitmq.service";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(RefreshToken)
-    private readonly refreshTokenRepository: Repository<RefreshToken>,
-    private userRepository: UserRepository,
+    private userService: UserService,
     private jwtService: JwtService,
     private cacheService: ClientService,
     private rabbitmqService: RabbitmqService,
-  ) {}
+  ) { }
+  
+  // Signup User
 
-  // to create user
   async createUser(userData: CreateUserDto): Promise<CreateUserResponse> {
     try {
-      const user = await this.userRepository.creatUser(userData);
-      const refreshToken = await this.generateRefereshtoken(user.id);
+      const userResponse = await this.userService.create(userData);
+      const user = userResponse.user; 
+      
+      await this.rabbitmqService.sendMessage("user_created", plainToClass(User, user));
 
-      // Save the refresh token in the database
-      await this.saveRefreshToken(user.id, refreshToken);
-      await this.rabbitmqService.sendMessage(
-        "user_created",
-        plainToClass(User, user),
-      );
       return {
         message: SUCCESS_MESSAGES.USER_CREATED,
         user: plainToClass(User, user),
@@ -57,18 +49,15 @@ export class AuthService {
     }
   }
 
-  // to create admin
+  //SignUp Admin
+
   async createAdmin(adminData: CreateUserDto): Promise<CreateUserResponse> {
     try {
-      const admin = await this.userRepository.createAdmin(adminData);
-      const refreshToken = await this.generateRefereshtoken(admin.id);
+      const adminResponse = await this.userService.createAdmin(adminData);
+      const admin = adminResponse.user; 
 
-      // Save the refresh token in the database
-      await this.saveRefreshToken(admin.id, refreshToken);
-      await this.rabbitmqService.sendMessage(
-        "admin_created",
-        plainToClass(User, admin),
-      );
+      await this.rabbitmqService.sendMessage("admin_created", plainToClass(User, admin));
+
       return {
         message: SUCCESS_MESSAGES.ADMIN_CREATED,
         user: plainToClass(User, admin),
@@ -78,14 +67,13 @@ export class AuthService {
     }
   }
 
-  // login user to authenticate the access
+   // Login
   async validateUser(userData: LoginDto): Promise<LoginUserResponse> {
     const { email, password } = userData;
     try {
-      const user = await this.userRepository.findOneByEmail(email);
-      if (!user) {
-        throw new BadRequestException(ERROR_MESSAGES.USER_NOT_FOUND);
-      }
+      const userResponse = await this.userService.findOneEmail(email);
+      const user = userResponse.user;
+
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         throw new BadRequestException(ERROR_MESSAGES.INVALID_CREDENTIALS);
@@ -95,10 +83,13 @@ export class AuthService {
         throw new BadRequestException(ERROR_MESSAGES.USER_INACTIVE);
       }
 
-      const accessToken = await this.generateAccesstoken(
-        user.id,
-        user.role.name,
-      );
+        const refreshToken = await this.userService.findTokenById(user.id);
+    const newToken = await this.generateRefereshtoken(user.id);
+
+    // If a refresh token exists for this user, update it
+    await this.userService.saveUpdateToken(user.id, newToken);
+
+      const accessToken = await this.generateAccesstoken(user.id, user.role.name);
       return {
         message: SUCCESS_MESSAGES.USER_LOGGEDIN,
         user: plainToClass(User, user),
@@ -106,13 +97,13 @@ export class AuthService {
       };
     } catch (error) {
       if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
+        throw error;
       }
       throw new InternalServerErrorException(error);
     }
   }
 
-  // generate access token using jwt
+// Generate AccessToken
   async generateAccesstoken(userId: number, role: string): Promise<string> {
     try {
       const accessToken = this.jwtService.sign({ id: userId, role: role });
@@ -123,50 +114,25 @@ export class AuthService {
     }
   }
 
-  // generate refresh token using jwt
-
+  // Generate refreshToken
   async generateRefereshtoken(userId: number): Promise<string> {
     try {
-      const refreshToken = this.jwtService.sign(
-        { id: userId },
-        { expiresIn: "7d" },
-      );
-      await this.cacheService.setValue(
-        `refresh_token`,
-        JSON.stringify(refreshToken),
-      );
+      const refreshToken = this.jwtService.sign({ id: userId }, { expiresIn: "7d" });
+      await this.cacheService.setValue(`refresh_token`, JSON.stringify(refreshToken));
       return refreshToken;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
 
-  // save the refreshtoken to the database so that when accesstoken expires then give permssion through refreshtoken
-  async saveRefreshToken(userId: number, token: string): Promise<void> {
-    try {
-      const refreshToken = this.refreshTokenRepository.create({
-        token,
-        user: { id: userId } as User,
-        expiresAt: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-      });
+  
 
-      await this.refreshTokenRepository.save(refreshToken);
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
-  // validate the refreshtoken from the database
+  //ValidateToken
   async validateRefreshToken(refreshToken: string): Promise<RefreshToken> {
     try {
-      const tokenRecord = await this.refreshTokenRepository.findOne({
-        where: { token: refreshToken },
-        relations: ["user", "user.role"],
-      });
+      const tokenRecord = await this.userService.findToken(refreshToken)
       if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
-        throw new UnauthorizedException(
-          ERROR_MESSAGES.INVALID_REFRESH_TOKEN_OR_EXPIRES,
-        );
+        throw new UnauthorizedException(ERROR_MESSAGES.INVALID_REFRESH_TOKEN_OR_EXPIRES);
       }
       return tokenRecord;
     } catch (error) {
@@ -177,21 +143,15 @@ export class AuthService {
     }
   }
 
-  // if refreshtoken exist then give the new access token to authenticate the users.
-
-  async refreshToken(
-    refresTokenDto: RefreshTokenDto,
-  ): Promise<{ accessToken: string }> {
+  //Genereate new AccessToken
+  async refreshToken(refresTokenDto: RefreshTokenDto): Promise<{ accessToken: string }> {
     try {
       const { refreshToken } = refresTokenDto;
 
       const tokenRecord = await this.validateRefreshToken(refreshToken);
 
       const user = tokenRecord.user;
-      const accessToken = await this.generateAccesstoken(
-        user.id,
-        user.role.name,
-      );
+      const accessToken = await this.generateAccesstoken(user.id, user.role.name);
       await this.cacheService.setValue(`access_token`, JSON.stringify(user));
       return { accessToken };
     } catch (error) {

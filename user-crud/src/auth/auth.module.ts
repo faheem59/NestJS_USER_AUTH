@@ -10,6 +10,7 @@ import { AuthGuard } from "./guard/auth.gaurd";
 import { RolesGuard } from "./guard/role.gaurd";
 import { ClientService } from "src/redisClient/client.service";
 import { RabbitmqModule } from "src/rabbitmq/rabbitmq.module";
+import { UserService } from "src/user/user.service";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RabbitmqModule } from "src/rabbitmq/rabbitmq.module";
   providers: [
     AuthService,
     ClientService,
+    UserService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

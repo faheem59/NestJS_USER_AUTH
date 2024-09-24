@@ -5,7 +5,7 @@ import { CreateUserDto } from "./dto/sign-up-dto";
 import {
   CreateUserResponse,
   LoginUserResponse,
-} from "src/utils/success-response";
+} from "../utils/success-response";
 import { Public } from "./decorator/public.decorator";
 import { RefreshTokenDto } from "./dto/refresh-token-dto";
 

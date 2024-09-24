@@ -10,6 +10,7 @@ import { PermissionRepository } from "./repositories/permssion-repository";
 import { RefreshToken } from "./entities/refreshToken.entity";
 import { ClientService } from "../redisClient/client.service";
 import { MailService } from "../mail/mail.service";
+import { RefreshTokenRepository } from "./repositories/refreshToken-repository";
 
 @Module({
   imports: [
@@ -18,11 +19,12 @@ import { MailService } from "../mail/mail.service";
   providers: [
     UserRepository,
     PermissionRepository,
+    RefreshTokenRepository,
     UserService,
     ClientService,
     MailService,
   ],
   controllers: [UserController],
-  exports: [UserRepository, PermissionRepository, TypeOrmModule],
+  exports: [UserRepository, PermissionRepository, RefreshTokenRepository,TypeOrmModule],
 })
 export class UserModule {}
