@@ -25,6 +25,11 @@ import { RefreshTokenRepository } from "./repositories/refreshToken-repository";
     MailService,
   ],
   controllers: [UserController],
-  exports: [UserRepository, PermissionRepository, RefreshTokenRepository,TypeOrmModule],
+  exports: [
+    UserRepository,
+    PermissionRepository,
+    RefreshTokenRepository,
+    TypeOrmModule,
+  ],
 })
 export class UserModule {}

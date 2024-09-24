@@ -1,20 +1,16 @@
 import { Repository } from "typeorm";
 
-import {
-  Injectable,
-  InternalServerErrorException,
-} from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RefreshToken } from "../entities/refreshToken.entity";
-
 
 @Injectable()
 export class RefreshTokenRepository {
   constructor(
     @InjectRepository(RefreshToken)
     private readonly refreshTokenReposoitry: Repository<RefreshToken>,
-  ) { }
-  
+  ) {}
+
   // Save the token and also update the token if exist
 
   async saveUpdateToken(userId: number, token: string): Promise<void> {
@@ -36,7 +32,7 @@ export class RefreshTokenRepository {
     }
   }
 
-  // find token 
+  // find token
   async findToken(token: string): Promise<RefreshToken> {
     return this.refreshTokenReposoitry.findOne({
       where: { token },
@@ -44,8 +40,7 @@ export class RefreshTokenRepository {
     });
   }
 
-  
-// find user wit id and token
+  // find user wit id and token
   async findTokenById(userId: number): Promise<RefreshToken | null> {
     try {
       return await this.refreshTokenReposoitry.findOne({

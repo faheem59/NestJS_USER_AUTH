@@ -8,7 +8,7 @@ export enum Common {
   RABBITMQ_CLIENT = "RABBITMQ_CLIENT",
   VERIFICATION_SUBJECT = "Welcome, Please Verify Your account",
   RESET_PASSWORD_SUBJECT = "Password Reset Request",
-  USER_CREATED = 'user_created',
-  ADMIN_CREATED = 'admin_created',
-  REFRESH_TOKEN = 'refresh_token',
+  USER_CREATED = "user_created",
+  ADMIN_CREATED = "admin_created",
+  REFRESH_TOKEN = "refresh_token",
 }

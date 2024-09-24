@@ -8,7 +8,10 @@ import { CreateUserDto } from "./dto/sign-up-dto";
 import { SUCCESS_MESSAGES } from "../utils/success-messges";
 import { ERROR_MESSAGES } from "../utils/error-messages";
 import { LoginDto } from "./dto/login-dto";
-import { CreateUserResponse, LoginUserResponse } from "../utils/success-response";
+import {
+  CreateUserResponse,
+  LoginUserResponse,
+} from "../utils/success-response";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
@@ -28,16 +31,19 @@ export class AuthService {
     private jwtService: JwtService,
     private cacheService: ClientService,
     private rabbitmqService: RabbitmqService,
-  ) { }
-  
+  ) {}
+
   // Signup User
 
   async createUser(userData: CreateUserDto): Promise<CreateUserResponse> {
     try {
       const userResponse = await this.userService.create(userData);
-      const user = userResponse.user; 
-      
-      await this.rabbitmqService.sendMessage(Common.USER_CREATED, plainToClass(User, user));
+      const user = userResponse.user;
+
+      await this.rabbitmqService.sendMessage(
+        Common.USER_CREATED,
+        plainToClass(User, user),
+      );
 
       return {
         message: SUCCESS_MESSAGES.USER_CREATED,
@@ -53,9 +59,12 @@ export class AuthService {
   async createAdmin(adminData: CreateUserDto): Promise<CreateUserResponse> {
     try {
       const adminResponse = await this.userService.createAdmin(adminData);
-      const admin = adminResponse.user; 
+      const admin = adminResponse.user;
 
-      await this.rabbitmqService.sendMessage(Common.ADMIN_CREATED, plainToClass(User, admin));
+      await this.rabbitmqService.sendMessage(
+        Common.ADMIN_CREATED,
+        plainToClass(User, admin),
+      );
 
       return {
         message: SUCCESS_MESSAGES.ADMIN_CREATED,
@@ -66,7 +75,7 @@ export class AuthService {
     }
   }
 
-   // Login
+  // Login
   async validateUser(userData: LoginDto): Promise<LoginUserResponse> {
     const { email, password } = userData;
     try {
@@ -82,13 +91,16 @@ export class AuthService {
         throw new BadRequestException(ERROR_MESSAGES.USER_INACTIVE);
       }
 
-        const refreshToken = await this.userService.findTokenById(user.id);
-    const newToken = await this.generateRefereshtoken(user.id);
+      await this.userService.findTokenById(user.id);
+      const newToken = await this.generateRefereshtoken(user.id);
 
-    // If a refresh token exists for this user, update it
-    await this.userService.saveUpdateToken(user.id, newToken);
+      // If a refresh token exists for this user, update it
+      await this.userService.saveUpdateToken(user.id, newToken);
 
-      const accessToken = await this.generateAccesstoken(user.id, user.role.name);
+      const accessToken = await this.generateAccesstoken(
+        user.id,
+        user.role.name,
+      );
       return {
         message: SUCCESS_MESSAGES.USER_LOGGEDIN,
         user: plainToClass(User, user),
@@ -102,7 +114,7 @@ export class AuthService {
     }
   }
 
-// Generate AccessToken
+  // Generate AccessToken
   async generateAccesstoken(userId: number, role: string): Promise<string> {
     try {
       const accessToken = this.jwtService.sign({ id: userId, role: role });
@@ -116,22 +128,28 @@ export class AuthService {
   // Generate refreshToken
   async generateRefereshtoken(userId: number): Promise<string> {
     try {
-      const refreshToken = this.jwtService.sign({ id: userId }, { expiresIn: "7d" });
-      await this.cacheService.setValue(Common.REFRESH_TOKEN, JSON.stringify(refreshToken));
+      const refreshToken = this.jwtService.sign(
+        { id: userId },
+        { expiresIn: "7d" },
+      );
+      await this.cacheService.setValue(
+        Common.REFRESH_TOKEN,
+        JSON.stringify(refreshToken),
+      );
       return refreshToken;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
 
-  
-
   //ValidateToken
   async validateRefreshToken(refreshToken: string): Promise<RefreshToken> {
     try {
-      const tokenRecord = await this.userService.findToken(refreshToken)
+      const tokenRecord = await this.userService.findToken(refreshToken);
       if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
-        throw new UnauthorizedException(ERROR_MESSAGES.INVALID_REFRESH_TOKEN_OR_EXPIRES);
+        throw new UnauthorizedException(
+          ERROR_MESSAGES.INVALID_REFRESH_TOKEN_OR_EXPIRES,
+        );
       }
       return tokenRecord;
     } catch (error) {
@@ -143,15 +161,23 @@ export class AuthService {
   }
 
   //Genereate new AccessToken
-  async refreshToken(refresTokenDto: RefreshTokenDto): Promise<{ accessToken: string }> {
+  async refreshToken(
+    refresTokenDto: RefreshTokenDto,
+  ): Promise<{ accessToken: string }> {
     try {
       const { refreshToken } = refresTokenDto;
 
       const tokenRecord = await this.validateRefreshToken(refreshToken);
 
       const user = tokenRecord.user;
-      const accessToken = await this.generateAccesstoken(user.id, user.role.name);
-      await this.cacheService.setValue(Common.ACCESS_TOKEN, JSON.stringify(user));
+      const accessToken = await this.generateAccesstoken(
+        user.id,
+        user.role.name,
+      );
+      await this.cacheService.setValue(
+        Common.ACCESS_TOKEN,
+        JSON.stringify(user),
+      );
       return { accessToken };
     } catch (error) {
       throw new InternalServerErrorException(error.message);

@@ -17,7 +17,9 @@ import { ClientService } from "../redisClient/client.service";
 describe("UserService", () => {
   let userService: UserService;
   let userRepository: Partial<UserRepository>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let permissionRepository: Partial<PermissionRepository>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let clientService: Partial<ClientService>;
 
   const mockUser = {
@@ -75,7 +77,6 @@ describe("UserService", () => {
       module.get<Partial<PermissionRepository>>(PermissionRepository);
     clientService = module.get<Partial<ClientService>>(ClientService);
   });
- 
 
   describe("findAll", () => {
     it("should return all users without sensitive info", async () => {

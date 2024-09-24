@@ -21,10 +21,15 @@ import { LoginDto } from "./dto/login-dto";
 describe("AuthService", () => {
   let authService: AuthService;
   let userRepository: Partial<UserRepository>;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let refreshTokenRepository: Partial<Repository<RefreshToken>>;
-    let jwtService: JwtService;
-    let clientService: ClientService;
-    let rabbitmqService: RabbitmqService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let jwtService: JwtService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let clientService: ClientService;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let rabbitmqService: RabbitmqService;
 
   const mockUser = {
     id: 1,
