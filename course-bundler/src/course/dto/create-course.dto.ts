@@ -1,13 +1,17 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
   IsOptional,
   IsNumber,
   IsObject,
-  IsArray,
-} from "class-validator";
+} from 'class-validator';
 
 export class CreateCourseDto {
+  @IsNumber()
+  @IsOptional()
+  id: number;
+
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -17,15 +21,17 @@ export class CreateCourseDto {
   description: string;
 
   @IsObject()
-  @IsNotEmpty()
+  @IsOptional()
   poster: { public_id: string; url: string };
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   views?: number;
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   numOfVideos?: number;
 
   @IsString()
@@ -34,6 +40,7 @@ export class CreateCourseDto {
 
   @IsObject()
   @IsOptional()
+  @Type(() => Object)
   createdBy: object;
 
   @IsOptional()

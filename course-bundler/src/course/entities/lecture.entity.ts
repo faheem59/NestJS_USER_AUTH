@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Course } from "./course.entity";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  DeleteDateColumn,
+} from 'typeorm';
+import { Course } from './course.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Lecture {
@@ -12,12 +19,16 @@ export class Lecture {
   @Column()
   description: string;
 
-  @Column("jsonb")
+  @Column('jsonb')
   video: {
     public_id?: string;
     url?: string;
   };
 
-  @ManyToOne(() => Course, (course) => course.lectures, { onDelete: "CASCADE" })
+  @ManyToOne(() => Course, (course) => course.lectures, { onDelete: 'CASCADE' })
   course: Course;
+
+  @Exclude()
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

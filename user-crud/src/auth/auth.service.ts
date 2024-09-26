@@ -39,7 +39,6 @@ export class AuthService {
     try {
       const userResponse = await this.userService.create(userData);
       const user = userResponse.user;
-
       await this.rabbitmqService.sendMessage(
         Common.USER_CREATED,
         plainToClass(User, user),
