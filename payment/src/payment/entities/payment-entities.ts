@@ -22,7 +22,7 @@ export class Payment {
   })
   status: Status;
 
-  @Column()
+  @Column({ nullable: true })
   transactionId: string;
 
   @Column()

@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { PaymentMethod } from 'src/enum/common.enum';
 
 export class EnrollmentDto {
   @IsNumber()
@@ -16,4 +17,12 @@ export class EnrollmentDto {
   @IsNotEmpty()
   @IsString()
   status: string;
+
+  @IsOptional()
+  @IsNumber()
+  amount: number;
+
+  @IsOptional()
+  @IsNumber()
+  paymentMethod: PaymentMethod;
 }

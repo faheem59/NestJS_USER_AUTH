@@ -4,6 +4,7 @@ import {
   ManyToOne,
   JoinColumn,
   Column,
+  CreateDateColumn,
 } from 'typeorm';
 import { Payment } from '../entities/payment-entities';
 
@@ -12,21 +13,17 @@ export class Enrollment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Payment, (payment) => payment.enrollments, { eager: true })
+  @Column()
+  userId: number;
+
+  @Column()
+  courseId: number;
+
+  @ManyToOne(() => Payment, (payment) => payment.enrollments)
   @JoinColumn({ name: 'payment_id' })
   payment: Payment;
 
-  @Column({ type: 'jsonb' })
-  user: {
-    id: number;
-  };
-
-  @Column({ type: 'jsonb' })
-  course: {
-    id: number;
-  };
-
-  @Column()
+  @CreateDateColumn()
   enrolledAt: Date;
 
   @Column({ default: 'active' })
