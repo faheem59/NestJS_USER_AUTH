@@ -4,10 +4,11 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { Common } from '../utils/constants/common.constants';
 
 @Injectable()
 export class ClientService {
-  constructor(@Inject('CACHE_MANAGER') private cacheManager: Cache) {}
+  constructor(@Inject(Common.CACHE_MANAGER) private cacheManager: Cache) {}
 
   async setValue(key: string, value: any): Promise<void> {
     try {

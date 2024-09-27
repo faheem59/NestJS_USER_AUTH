@@ -15,7 +15,7 @@ export class PaymentService {
     return await this.repository.create(enrollData, userId);
   }
 
-  async getenrollmentByUserId(userId: number): Promise<any> {
+  async getenrollmentByUserId(userId: number): Promise<Enrollment | Payment> {
     return this.repository.getEonrollmentByUserId(userId);
   }
 }
