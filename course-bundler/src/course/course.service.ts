@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
-import { CourseRepository } from './repository/course-repository';
-import { LectureDto } from './dto/Lecture-dto';
-import { RedisClientService } from 'src/redis-client/redis-client.service';
-import { RabbitmqService } from 'src/rabbitmq/rabbitmq.service';
+import { Injectable } from "@nestjs/common";
+import { CreateCourseDto } from "./dto/create-course.dto";
+import { UpdateCourseDto } from "./dto/update-course.dto";
+import { CourseRepository } from "./repository/course-repository";
+import { LectureDto } from "./dto/Lecture-dto";
+import { RedisClientService } from "src/redis-client/redis-client.service";
+import { RabbitmqService } from "src/rabbitmq/rabbitmq.service";
+import { Common } from "src/utils/constants/common.constant";
 
 @Injectable()
 export class CourseService {
@@ -15,7 +16,10 @@ export class CourseService {
   ) {}
 
   async create(createCourseData: CreateCourseDto, file: Express.Multer.File) {
-    await this.rabbitmqService.sendMessage('course_created', createCourseData);
+    await this.rabbitmqService.sendMessage(
+      Common.COURSE_CREATED,
+      createCourseData,
+    );
     return await this.courseRepository.createCourse(createCourseData, file);
   }
 
@@ -24,7 +28,7 @@ export class CourseService {
     lectureData: LectureDto,
     file: Express.Multer.File,
   ) {
-    await this.redisService.setValue('lecture', lectureData);
+    await this.redisService.setValue(Common.LECTURE, lectureData);
     return await this.courseRepository.addLectures(courseId, lectureData, file);
   }
 
@@ -33,7 +37,7 @@ export class CourseService {
   }
 
   async findOne(id: number) {
-    await this.redisService.setValue('course', id);
+    await this.redisService.setValue(Common.COURSE, id);
     return await this.courseRepository.findCourseById(id);
   }
 

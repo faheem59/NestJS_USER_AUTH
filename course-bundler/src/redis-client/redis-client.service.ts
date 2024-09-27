@@ -2,9 +2,9 @@ import {
   Injectable,
   Inject,
   InternalServerErrorException,
-} from '@nestjs/common';
-import { Cache } from 'cache-manager';
-import { Common } from '../utils/constants/common.constant';
+} from "@nestjs/common";
+import { Cache } from "cache-manager";
+import { Common } from "../utils/constants/common.constant";
 
 @Injectable()
 export class RedisClientService {

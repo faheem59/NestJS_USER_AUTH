@@ -1,17 +1,17 @@
-import { Repository } from 'typeorm';
-import { Course } from '../entities/course.entity';
-import { CreateCourseDto } from '../dto/create-course.dto';
+import { Repository } from "typeorm";
+import { Course } from "../entities/course.entity";
+import { CreateCourseDto } from "../dto/create-course.dto";
 import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { RedisClientService } from 'src/redis-client/redis-client.service';
-import { LectureDto } from '../dto/Lecture-dto';
-import { Lecture } from '../entities/lecture.entity';
-import { CloudinaryService } from '../../config/cloudinary.service';
-import { ERROR_MESSAGES } from '../../utils/error-messages-constants';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { RedisClientService } from "src/redis-client/redis-client.service";
+import { LectureDto } from "../dto/Lecture-dto";
+import { Lecture } from "../entities/lecture.entity";
+import { CloudinaryService } from "../../config/cloudinary.service";
+import { ERROR_MESSAGES } from "../../utils/error-messages-constants";
 
 @Injectable()
 export class CourseRepository {
