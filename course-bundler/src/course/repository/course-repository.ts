@@ -12,6 +12,10 @@ import { LectureDto } from "../dto/Lecture-dto";
 import { Lecture } from "../entities/lecture.entity";
 import { CloudinaryService } from "../../config/cloudinary.service";
 import { ERROR_MESSAGES } from "../../utils/error-messages-constants";
+import { CreateQuizDto } from "../dto/create-quiz-dto";
+import { Quiz } from "../entities/quiz.entity";
+import { CreateQuestionDto } from "../dto/create-questions.dto";
+import { Question } from "../entities/question.entity";
 
 @Injectable()
 export class CourseRepository {
@@ -20,6 +24,10 @@ export class CourseRepository {
     private readonly courseRepository: Repository<Course>,
     @InjectRepository(Lecture)
     private readonly lectureRepositroy: Repository<Lecture>,
+    @InjectRepository(Quiz)
+    private readonly quizRepository: Repository<Quiz>,
+    @InjectRepository(Question)
+    private readonly questionRepository: Repository<Question>,
     private readonly redisClient: RedisClientService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
@@ -212,6 +220,44 @@ export class CourseRepository {
         throw new NotFoundException(error.message);
       }
       throw new InternalServerErrorException(ERROR_MESSAGES.UNEXPECTED_ERROR);
+    }
+  }
+
+  async createQuiz(lectureId: number, quizData: CreateQuizDto) {
+    const lecture = await this.lectureRepositroy.findOne({
+      where: { id: lectureId },
+    });
+    const quiz = this.quizRepository.create({ ...quizData, lecture });
+    return this.quizRepository.save(quiz);
+  }
+
+  async addQuestions(quizId: number, questionsData: CreateQuestionDto[]) {
+    const quiz = await this.quizRepository.findOne({
+      where: { id: quizId },
+      relations: ["questions"],
+    });
+
+    if (!quiz) {
+      throw new Error("Quiz not found");
+    }
+    const questions = questionsData.map((questionData) => {
+      return this.questionRepository.create({ ...questionData, quiz });
+    });
+
+    quiz.questions.push(...questions);
+
+    await this.quizRepository.save(quiz);
+
+    return questions;
+  }
+
+  async getAllQuiz(): Promise<Quiz[]> {
+    try {
+      return await this.quizRepository.find({
+        relations: ["questions"],
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

@@ -6,6 +6,9 @@ import { LectureDto } from "./dto/Lecture-dto";
 import { RedisClientService } from "src/redis-client/redis-client.service";
 import { RabbitmqService } from "src/rabbitmq/rabbitmq.service";
 import { Common } from "src/utils/constants/common.constant";
+import { CreateQuizDto } from "./dto/create-quiz-dto";
+import { CreateQuestionDto } from "./dto/create-questions.dto";
+import { Quiz } from "./entities/quiz.entity";
 
 @Injectable()
 export class CourseService {
@@ -59,5 +62,17 @@ export class CourseService {
 
   async removeLecture(id: number) {
     return await this.courseRepository.removeLecture(id);
+  }
+
+  async createQuiz(id: number, quizData: CreateQuizDto) {
+    return await this.courseRepository.createQuiz(id, quizData);
+  }
+
+  async addQuestion(id: number, questionData: CreateQuestionDto[]) {
+    return this.courseRepository.addQuestions(id, questionData);
+  }
+
+  async getAllQuiz(): Promise<Quiz[]> {
+    return this.courseRepository.getAllQuiz();
   }
 }

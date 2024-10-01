@@ -2,14 +2,16 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  ManyToOne,
   OneToMany,
   DeleteDateColumn,
 } from "typeorm";
 import { Lecture } from "./lecture.entity";
+import { Question } from "./question.entity";
 import { Exclude } from "class-transformer";
 
 @Entity()
-export class Course {
+export class Quiz {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,26 +21,16 @@ export class Course {
   @Column({ length: 1000 })
   description: string;
 
-  @OneToMany(() => Lecture, (lecture) => lecture.course, { cascade: true })
-  lectures: Lecture[];
+  @ManyToOne(() => Lecture, (lecture) => lecture.quizzes, {
+    onDelete: "CASCADE",
+  })
+  lecture: Lecture;
 
-  @Column("jsonb", { nullable: true })
-  poster: { public_id?: string; url?: string } | null;
+  @OneToMany(() => Question, (question) => question.quiz, { cascade: true })
+  questions: Question[];
 
   @Column({ default: 0 })
-  views: number;
-
-  @Column({ default: 0 })
-  numOfVideos: number;
-
-  @Column({ nullable: true })
-  category: string;
-
-  @Column("jsonb", { nullable: true })
-  createdBy: {
-    id?: number;
-    name?: string;
-  };
+  passingScore: number;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
